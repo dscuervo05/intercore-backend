@@ -16,8 +16,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Buscamos al usuario por su correo. Si no existe, lanzamos un error de seguridad.
-        return usuarioRepository.findByCorreo(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el correo: " + username));
+        System.out.println("1. Intentando buscar en BD el correo: " + username);
+        
+        return usuarioRepository.findByCorreo(username).map(usuario -> {
+            System.out.println("2. ¡Usuario ENCONTRADO en BD!");
+            System.out.println("3. Hash guardado: " + usuario.getContrasenaHash());
+            return usuario;
+        }).orElseThrow(() -> {
+            System.out.println("2. ERROR FATAL: El usuario NO existe en la base de datos.");
+            return new UsernameNotFoundException("Usuario no encontrado con el correo: " + username);
+        });
     }
 }
