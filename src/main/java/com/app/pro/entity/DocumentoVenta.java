@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class DocumentoVenta {
     
+    
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID  id_documento;
@@ -32,6 +34,7 @@ public class DocumentoVenta {
     private BigDecimal totalFinal;
     
     @OneToMany(mappedBy = "documentoVenta", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<DetalleVenta> detalles;
     
     
