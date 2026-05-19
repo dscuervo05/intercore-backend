@@ -12,9 +12,13 @@ import java.time.LocalDateTime;
 
 public class Cliente {
     
+    @Column(name = "id_empresa_tenant", nullable = false)
+    private String idEmpresaTenant;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id_cliente;
+    @Column(name = "id_cliente")
+    private UUID idCliente;
     
     @Column(name = "tipo_documento" , nullable = false)
     private String tipoDocumento;

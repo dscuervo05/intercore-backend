@@ -14,16 +14,24 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
     
-    public  List<Cliente> listarTodos(){
-        return clienteRepository.findAll();
+    // 🎯 MODIFICADO: Ahora solo lista los clientes de la empresa que lo solicita
+    public List<Cliente> listarTodos(String idEmpresa){
+        return clienteRepository.findByIdEmpresaTenant(idEmpresa);
     }
     
-    public Cliente guardarCliente(Cliente nuevoCliente){
+    // 🎯 MODIFICADO: Recibe el cliente y a qué empresa pertenece
+    public Cliente guardarCliente(Cliente nuevoCliente, String idEmpresa){
         
         Optional<Cliente> clienteExistente = clienteRepository.findByNumeroDocumento(nuevoCliente.getNumeroDocumento());
         if(clienteExistente.isPresent()){
-            throw new IllegalArgumentException("Error: el documento" + nuevoCliente.getNumeroDocumento() + " ya esta registradoen en el sistema.");
+            throw new IllegalArgumentException("Error: el documento " + nuevoCliente.getNumeroDocumento() + " ya está registrado en el sistema.");
         }
+
+        // 🔒 INYECCIÓN DE SEGURIDAD SAAS
+        // Le "tatuamos" la empresa al cliente antes de tocar la base de datos
+        // Así evitamos que el frontend tenga que enviarlo (o que lo manipulen)
+        nuevoCliente.setIdEmpresaTenant(idEmpresa);
+        
         return clienteRepository.save(nuevoCliente);
     }
     

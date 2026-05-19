@@ -19,7 +19,7 @@ public class FacturacionController {
     
     @PostMapping
     public ResponseEntity<DocumentoVenta> crearVenta(@RequestBody DocumentoVenta venta) {
-        DocumentoVenta ventaGuardada = facturacionService.procesarVenta(venta);
+        DocumentoVenta ventaGuardada = facturacionService.procesarFactura(venta);
         return new ResponseEntity<>(ventaGuardada, HttpStatus.CREATED);
     }
     

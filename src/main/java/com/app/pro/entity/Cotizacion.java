@@ -13,6 +13,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Data
 public class Cotizacion {
     
+    @Column(name = "id_empresa_tenant", nullable = false)
+    private String idEmpresaTenant;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id_cotizacion;

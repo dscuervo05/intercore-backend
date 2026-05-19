@@ -12,28 +12,29 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/clientes")
 @CrossOrigin("*")
-
 public class ClienteController {
+    
+    // 🎯 Definimos la constante de la empresa para nuestras pruebas de SaaS
+    private static final String ID_EMPRESA_TEST = "TORNIMAX_001";
     
     @Autowired
     private ClienteService clienteService;
     
     @GetMapping
     public List<Cliente> listarClientes(){
-        return clienteService.listarTodos();
+        // Llamamos al servicio pasando la empresa
+        return clienteService.listarTodos(ID_EMPRESA_TEST);
     }
     
     @PostMapping
     public ResponseEntity<?> guardarCliente(@RequestBody Cliente cliente) {
         try {
-            // Intentamos guardar usando nuestra lógica de negocio
-            Cliente clienteGuardado = clienteService.guardarCliente(cliente);
+            // Llamamos al servicio pasando el objeto y la empresa
+            Cliente clienteGuardado = clienteService.guardarCliente(cliente, ID_EMPRESA_TEST);
             return new ResponseEntity<>(clienteGuardado, HttpStatus.CREATED);
             
         } catch (IllegalArgumentException e) {
-            // Si el servicio detecta un duplicado, le mandamos el texto del error al frontend de Fernanda
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
-

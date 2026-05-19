@@ -9,6 +9,10 @@ import java.util.UUID;
 @Table(name = "proveedores")
 @Data
 public class Proveedor {
+    
+    @Column(name = "id_empresa_tenant", nullable = false)
+    private String idEmpresaTenant;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id_proveedor;

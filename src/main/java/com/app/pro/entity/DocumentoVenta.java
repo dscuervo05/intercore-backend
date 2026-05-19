@@ -31,7 +31,20 @@ public class DocumentoVenta {
     @Column(name = "fecha_emision")
     private LocalDateTime fechaEmision = LocalDateTime.now();
     
-    private BigDecimal totalFinal;
+    @Column(name = "subtotal_global")
+    private BigDecimal subtotalGobal = BigDecimal.ZERO;
+    
+    @Column(name = "total_descuento")
+    private BigDecimal totalDescuento = BigDecimal.ZERO;
+    
+    @Column(name = "total_base_imponible")
+    private BigDecimal totalBaseImponile = BigDecimal.ZERO;
+    
+    @Column(name = "total_iva")
+    private BigDecimal totalIva = BigDecimal.ZERO;
+    
+    @Column(name = "total_final")
+    private BigDecimal totalFinal = BigDecimal.ZERO;
     
     @OneToMany(mappedBy = "documentoVenta", cascade = CascadeType.ALL)
     @JsonManagedReference
