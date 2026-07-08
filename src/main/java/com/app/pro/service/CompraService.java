@@ -22,7 +22,7 @@ public class CompraService {
     private InventarioRepository inventarioRepository;
 
     @Transactional
-    public DocumentoCompra procesarCompra(DocumentoCompra nuevaCompra) {
+    public DocumentoCompra procesarCompra(DocumentoCompra nuevaCompra, String idEmpresa) { // 🎯 Pedimos la empresa aquí
         
         List<DetalleCompra> detalles = nuevaCompra.getDetalles();
         
@@ -30,9 +30,12 @@ public class CompraService {
             for (DetalleCompra detalle : detalles) {
                 // 1. Enlazar el detalle con su factura
                 detalle.setDocumentoCompra(nuevaCompra);
-
-                // 2. Buscar si el producto ya existe en el inventario
-                Optional<Inventario> inventarioOpt = inventarioRepository.findFirstByProducto(detalle.getProducto());
+                
+                // 2. 🎯 BUSCAMOS CON EL METODO SAAS (Pasando el UUID del producto y la empresa)
+                Optional<Inventario> inventarioOpt = inventarioRepository.findByIdProductoAndIdEmpresaTenant(
+                        detalle.getProducto().getIdproducto(), 
+                        idEmpresa
+                );
                 
                 if (inventarioOpt.isPresent()) {
                     // Si existe, le SUMAMOS la cantidad comprada
@@ -46,11 +49,16 @@ public class CompraService {
                     nuevoInventario.setCantidad(detalle.getCantidad());
                     nuevoInventario.setStockMinimo(5); // Una alerta por defecto
                     nuevoInventario.setUbicacion("Bodega Principal");
+                    
+                    // 🎯 INYECTAMOS LA SEGURIDAD SAAS AL NUEVO INVENTARIO
+                    nuevoInventario.setIdEmpresaTenant(idEmpresa);
+                    
                     inventarioRepository.save(nuevoInventario);
                 }
             }
         }
         
-        return compraRepository.save(nuevaCompra);
+        // Asumiendo que al final guardas la compra o retornas el objeto
+        return nuevaCompra; 
     }
 }

@@ -9,6 +9,10 @@ import java.util.UUID;
 @Data
 
 public class Inventario {
+    
+    @Column(name = "id_empresa_tenant", nullable = false)
+    private String idEmpresaTenant;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id_inventario;

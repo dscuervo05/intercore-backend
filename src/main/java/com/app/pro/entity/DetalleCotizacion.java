@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.util.UUID;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "detalle_cotizacion")
@@ -13,18 +13,22 @@ public class DetalleCotizacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id_detalle_cotizacion;
+    private UUID idDetalle;
 
-    @ManyToOne
-    @JoinColumn(name = "id_cotizacion", nullable = false)
-    @JsonBackReference
-    private Cotizacion cotizacion;
+    private Integer cantidad;
+
+    @Column(name = "precio_unitario")
+    private BigDecimal precioUnitario;
+
+    private BigDecimal subtotal;
 
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
 
-    private Integer cantidad;
-    private BigDecimal precioUnitario;
-    private BigDecimal subtotal;
+    // El @JsonIgnore evita ciclos infinitos al enviar datos al frontend
+    @ManyToOne
+    @JoinColumn(name = "id_cotizacion", nullable = false)
+    @JsonIgnore 
+    private Cotizacion cotizacion;
 }

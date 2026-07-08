@@ -17,6 +17,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario implements UserDetails {
+    
+    private static final long serialVersionUID = 1;
+    
+    @Column(name = "id_empresa_tenant", nullable = false)
+    private String idEmpresaTenant;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

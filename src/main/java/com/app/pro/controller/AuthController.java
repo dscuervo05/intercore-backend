@@ -1,6 +1,8 @@
 package com.app.pro.controller;
 
 import com.app.pro.dto.AuthRequest;
+import com.app.pro.entity.Usuario;
+import com.app.pro.repository.UsuarioRepository;
 import com.app.pro.security.CustomUserDetailsService;
 import com.app.pro.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin("*")
 public class AuthController {
 
     @Autowired
@@ -28,39 +32,41 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // 🎯 EL ÚNICO ENDPOINT DE LOGIN (Fusión de tu código y la lógica SaaS)
     @PostMapping("/login")
-    public ResponseEntity<?> crearTokenAutenticacion(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
             // 1. Intentar autenticar con el correo y contraseña reales
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getCorreo(), authRequest.getContrasena())
             );
         } catch (BadCredentialsException e) {
-            // Si la contraseña es incorrecta, devolvemos un error 401
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Correo o contraseña incorrectos");
         }
 
-        // 2. Si pasó, buscamos los datos del usuario
+        // 2. Si pasó, buscamos los datos para Spring Security
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getCorreo());
 
-        // 3. Generamos el Token JWT
-        final String jwt = jwtUtil.generateToken(userDetails);
+        // 3. Buscamos el usuario real en BD para saber a qué empresa pertenece
+        Usuario usuarioReal = usuarioRepository.findByCorreo(authRequest.getCorreo())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado en la base de datos"));
 
-        // 4. Lo devolvemos en formato JSON
+        // 4. 🎯 EL TOQUE MAESTRO SAAS: Generamos el Token inyectando LA EMPRESA
+        final String jwt = jwtUtil.generateToken(userDetails, usuarioReal.getIdEmpresaTenant());
+
+        // 5. Lo devolvemos en formato JSON al frontend
         Map<String, String> response = new HashMap<>();
         response.put("token", jwt);
         return ResponseEntity.ok(response);
     }
     
-    // ... tus otras inyecciones (AuthenticationManager, JwtUtil, etc) ...
-
-    @Autowired
-    private com.app.pro.repository.UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
-
-    // NUEVO ENDPOINT PARA REGISTRAR USUARIOS LIMPIOS
+    // ENDPOINT PARA REGISTRAR USUARIOS
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@RequestBody AuthRequest request) {
         
@@ -69,18 +75,18 @@ public class AuthController {
             return ResponseEntity.badRequest().body("El correo ya está registrado");
         }
 
-        com.app.pro.entity.Usuario nuevoUsuario = new com.app.pro.entity.Usuario();
+        Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setCorreo(request.getCorreo());
-        
-        // Aquí ocurre la magia: Spring Boot encripta la contraseña de forma segura y sin espacios
         nuevoUsuario.setContrasenaHash(passwordEncoder.encode(request.getContrasena()));
-        
-        // Llenamos los campos obligatorios por defecto
         nuevoUsuario.setNombre("Usuario Nuevo");
-        nuevoUsuario.setNombreUsuario(request.getCorreo()); // Usamos el correo como username temporal
+        nuevoUsuario.setNombreUsuario(request.getCorreo()); 
         nuevoUsuario.setRol("ADMIN");
+        
+        // 🛡️ REGLA SAAS: El usuario DEBE nacer con una empresa asignada.
+        // Lo asignamos a Tornimax por defecto para que no falle la BD.
+        nuevoUsuario.setIdEmpresaTenant("TORNIMAX_001");
 
         usuarioRepository.save(nuevoUsuario);
-        return ResponseEntity.ok("Usuario registrado correctamente en Cuervo Lab");
+        return ResponseEntity.ok("Usuario registrado correctamente en IntegraCore");
     }
 }

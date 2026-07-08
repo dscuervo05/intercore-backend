@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "productos")
 @Data
-
 public class Producto {
     
     @Column(name = "id_empresa_tenant", nullable = false)
@@ -17,7 +16,7 @@ public class Producto {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id_producto;
+    private UUID idproducto;
     
     @Column(name = "codigo_barras_qr" , unique = true)
     private String codigoBarrasQR;

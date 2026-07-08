@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class DocumentoVenta {
     
-    
+    @Column(name = "id_empresa_tenant", nullable = false)
+    private String idEmpresaTenant;
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
