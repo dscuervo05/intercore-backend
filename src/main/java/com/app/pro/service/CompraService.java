@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,44 +22,59 @@ public class CompraService {
     @Autowired
     private InventarioRepository inventarioRepository;
 
+    // @Autowired
+    // private ContabilidadService contabilidadService; // Descomentar cuando integres la contabilidad automática
+
     @Transactional
-    public DocumentoCompra procesarCompra(DocumentoCompra nuevaCompra, String idEmpresa) { // 🎯 Pedimos la empresa aquí
-        
+    public DocumentoCompra procesarCompra(DocumentoCompra nuevaCompra, String idEmpresa) {
+
+        // 1. Asignar el Tenant a la compra
+        nuevaCompra.setIdEmpresaTenant(idEmpresa);
+
         List<DetalleCompra> detalles = nuevaCompra.getDetalles();
-        
+        BigDecimal totalCalculado = BigDecimal.ZERO;
+
         if (detalles != null && !detalles.isEmpty()) {
             for (DetalleCompra detalle : detalles) {
-                // 1. Enlazar el detalle con su factura
+                // Enlazar el detalle con su factura
                 detalle.setDocumentoCompra(nuevaCompra);
-                
-                // 2. 🎯 BUSCAMOS CON EL METODO SAAS (Pasando el UUID del producto y la empresa)
+
+                // Calcular subtotal de este ítem (Asumiendo que DetalleCompra tiene costoUnitario y cantidad)
+                // BigDecimal subtotal = detalle.getCostoUnitario().multiply(new BigDecimal(detalle.getCantidad()));
+                // totalCalculado = totalCalculado.add(subtotal);
+
+                // 2. Buscar en inventario con método SaaS (UUID del producto y la empresa)
                 Optional<Inventario> inventarioOpt = inventarioRepository.findByIdProductoAndIdEmpresaTenant(
-                        detalle.getProducto().getIdproducto(), 
+                        detalle.getProducto().getIdproducto(),
                         idEmpresa
                 );
-                
+
                 if (inventarioOpt.isPresent()) {
-                    // Si existe, le SUMAMOS la cantidad comprada
                     Inventario inv = inventarioOpt.get();
                     inv.setCantidad(inv.getCantidad() + detalle.getCantidad());
                     inventarioRepository.save(inv);
                 } else {
-                    // Si es nuevo, inicializamos su stock por primera vez
                     Inventario nuevoInventario = new Inventario();
                     nuevoInventario.setProducto(detalle.getProducto());
                     nuevoInventario.setCantidad(detalle.getCantidad());
-                    nuevoInventario.setStockMinimo(5); // Una alerta por defecto
+                    nuevoInventario.setStockMinimo(5);
                     nuevoInventario.setUbicacion("Bodega Principal");
-                    
-                    // 🎯 INYECTAMOS LA SEGURIDAD SAAS AL NUEVO INVENTARIO
                     nuevoInventario.setIdEmpresaTenant(idEmpresa);
-                    
+
                     inventarioRepository.save(nuevoInventario);
                 }
             }
         }
-        
-        // Asumiendo que al final guardas la compra o retornas el objeto
-        return nuevaCompra; 
+
+        // 3. Asignar el total calculado a la compra
+        nuevaCompra.setTotalGasto(totalCalculado);
+
+        // 4. 🎯 GUARDAR LA COMPRA (Esto faltaba para persistir cabecera y detalles en cascada)
+        DocumentoCompra compraGuardada = compraRepository.save(nuevaCompra);
+
+        // 5. Generar Asiento Contable Automático (Opcional según tu avance)
+        // contabilidadService.registrarAsientoCompra(compraGuardada, idEmpresa);
+
+        return compraGuardada;
     }
 }

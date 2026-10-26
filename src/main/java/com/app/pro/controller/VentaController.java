@@ -19,18 +19,25 @@ public class VentaController {
     
     @Autowired
     private VentaService ventaService;
-    
+
     @PostMapping("/crear")
-    @PreAuthorize("hasAnyRole ('ADMIN','MOSTRADOR')")
-    public ResponseEntity<?> resgistrarVenta(@RequestBody DocumentoVenta nuevaVenta){
-        
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Usuario usuarioLogueado = (Usuario) authentication.getPrincipal();
-        
-        nuevaVenta.setIdEmpresaTenant(usuarioLogueado.getIdEmpresaTenant());
-        
-        DocumentoVenta ventaGuardada = ventaService.guardarVenta(nuevaVenta);
-        return ResponseEntity.ok(ventaGuardada);
+    @PreAuthorize("hasAnyRole('ADMIN', 'MOSTRADOR')")
+    public ResponseEntity<?> registrarVenta(@RequestBody DocumentoVenta nuevaVenta) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Usuario usuarioLogueado = (Usuario) authentication.getPrincipal();
+
+            // Inyectamos el Tenant de seguridad
+            nuevaVenta.setIdEmpresaTenant(usuarioLogueado.getIdEmpresaTenant());
+
+            // Llamamos al nuevo método unificado
+            DocumentoVenta ventaProcesada = ventaService.procesarVentaIntegrada(nuevaVenta);
+
+            return ResponseEntity.ok(ventaProcesada);
+        } catch (IllegalArgumentException e) {
+            // Aprovechamos tu GlobalExceptionHandler devolviendo un Bad Request
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     
     @GetMapping("/historial")

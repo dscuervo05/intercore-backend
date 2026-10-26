@@ -26,6 +26,6 @@ public class CuentaContable {
     private String naturaleza;
     
     @Column(name = "id_empresa_tenant", nullable = false)
-    private String idEmpresatenant;
+    private String idEmpresaTenant;
     
 }

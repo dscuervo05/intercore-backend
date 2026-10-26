@@ -38,8 +38,8 @@ public class ProductoController {
     @PostMapping
     public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
         // Aseguramos que la fecha de creación sea la actual si no viene en el JSON
-        if (producto.getCredadoEn() == null) {
-            producto.setCredadoEn(LocalDateTime.now());
+        if (producto.getCreadoEn() == null) {
+            producto.setCreadoEn(LocalDateTime.now());
         }
         Producto nuevoProducto = productoRepository.save(producto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);

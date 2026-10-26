@@ -20,7 +20,7 @@ public class CotizacionService {
     private CotizacionRepository cotizacionRepository;
 
     @Autowired
-    private FacturacionService facturacionService; 
+    private VentaService ventaService;
 
     // Necesitamos el repositorio de productos para buscar el precio real
     @Autowired
@@ -151,6 +151,6 @@ public class CotizacionService {
         cotizacion.setEstado("FACTURADA");
         cotizacionRepository.save(cotizacion);
 
-        return facturacionService.procesarFactura(nuevaVenta);
+        return ventaService.procesarVentaIntegrada(nuevaVenta);
     }
 }

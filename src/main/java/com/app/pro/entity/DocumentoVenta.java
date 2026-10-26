@@ -47,6 +47,18 @@ public class DocumentoVenta {
     @Column(name = "total_final")
     private BigDecimal totalFinal = BigDecimal.ZERO;
     
+    @Column(name = "estado_dian")
+    private String estadoDian = "NO_ENVIADA";
+    
+    @Column(name = "cufe" , unique = true)
+    private String cufe;
+    
+    @Column(name = "qr_dian" , columnDefinition = "TEXT")
+    private String qrDian;
+    
+    @Column(name = "xml_referencia" , columnDefinition = "TEXT")
+    private String xmlReferencia;
+    
     @OneToMany(mappedBy = "documentoVenta", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<DetalleVenta> detalles;

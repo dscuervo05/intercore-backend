@@ -28,6 +28,6 @@ public class Producto {
     private BigDecimal costo;
     
     @Column(name = "creado_en")
-    private LocalDateTime credadoEn = LocalDateTime.now();
+    private LocalDateTime creadoEn = LocalDateTime.now();
     
 }

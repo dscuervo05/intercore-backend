@@ -76,6 +76,23 @@
                     <version>0.11.5</version>
                     <scope>runtime</scope>
                 </dependency>
+		<!-- Consumo de Web Services SOAP de la DIAN -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web-services</artifactId>
+		</dependency>
+		<!-- Firma digital XML estándar XAdES -->
+		<dependency>
+			<groupId>org.apache.santuario</groupId>
+			<artifactId>xmlsec</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<!-- Mapeo de objetos Java a XML UBL 2.1 -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -135,5 +152,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>

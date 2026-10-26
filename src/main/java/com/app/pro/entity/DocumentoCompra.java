@@ -16,6 +16,9 @@ public class DocumentoCompra {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id_compra;
 
+    @Column(name = "id_empresa_tenant", nullable = false )
+    private String idEmpresaTenant;
+
     @ManyToOne
     @JoinColumn(name = "id_proveedor", nullable = false)
     private Proveedor proveedor;
