@@ -14,12 +14,12 @@ public class ConfiguracionDianService {
     private ConfiguracionDianRepository configuracionRepository;
 
     public ConfiguracionDian obtenerConfiguracion(String idEmpresa){
-        return configuracionRepository.FindByIdEmpresaTenant(idEmpresa).
+        return configuracionRepository.findByIdEmpresaTenant(idEmpresa).
                 orElseThrow(() -> new IllegalArgumentException("La empresa aún no tiene configurada su facturación electrónica."));
     }
 
     public ConfiguracionDian guardaOActualizarConfiguracion(ConfiguracionDian nuevaConfig, String idEmpresa){
-        Optional<ConfiguracionDian> configExistente = configuracionRepository.FindByIdEmpresaTenant(idEmpresa);
+        Optional<ConfiguracionDian> configExistente = configuracionRepository.findByIdEmpresaTenant(idEmpresa);
 
         if (configExistente.isPresent()) {
 

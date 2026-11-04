@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface ConfiguracionDianRepository extends JpaRepository<ConfiguracionDian,UUID>{
 
-    Optional<ConfiguracionDian> FindByIdEmpresaTenant(String idEmpresaTenant);
+    Optional<ConfiguracionDian> findByIdEmpresaTenant(String idEmpresaTenant);
 
 }

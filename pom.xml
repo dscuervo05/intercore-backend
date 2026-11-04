@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -54,28 +54,29 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-security</artifactId>
-                </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
-                <dependency>
-                    <groupId>io.jsonwebtoken</groupId>
-                    <artifactId>jjwt-api</artifactId>
-                    <version>0.11.5</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.jsonwebtoken</groupId>
-                    <artifactId>jjwt-impl</artifactId>
-                    <version>0.11.5</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>io.jsonwebtoken</groupId>
-                    <artifactId>jjwt-jackson</artifactId>
-                    <version>0.11.5</version>
-                    <scope>runtime</scope>
-                </dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- Consumo de Web Services SOAP de la DIAN -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -87,11 +88,10 @@
 			<artifactId>xmlsec</artifactId>
 			<version>2.3.0</version>
 		</dependency>
-		<!-- Mapeo de objetos Java a XML UBL 2.1 -->
+		<!-- Mapeo de objetos Jakarta EE 10 / Spring Boot 3.x -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -144,14 +144,34 @@
 						</configuration>
 					</execution>
 				</executions>
-			 <configuration>
-			  <compilerArgs>
-			   <arg>-Xlint</arg>
-			  </compilerArgs>
-			 </configuration>
+				<configuration>
+					<compilerArgs>
+						<arg>-Xlint</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>4.0.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- Habilitar soporte obligatorio para SOAP 1.2 / WCF DIAN -->
+					<extension>true</extension>
+					<!-- Descarga y vinculación directa desde la URL de la DIAN -->
+					<wsdlUrls>
+						<wsdlUrl>https://vpfe-hab.dian.gov.co/WcfDianCustomerServices.svc?singleWsdl</wsdlUrl>
+					</wsdlUrls>
+					<packageName>com.app.pro.dian.wsdl</packageName>
+					<sourceDestDir>${project.build.directory}/generated-sources/jaxws</sourceDestDir>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
