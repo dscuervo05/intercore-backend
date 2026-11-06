@@ -42,4 +42,5 @@ public void descontarStock(UUID idProducto, int cantidadVendida, String idEmpres
     // 3. Matemática de sustracción
     stockActual.setCantidad(stockActual.getCantidad() - cantidadVendida);
     inventarioRepository.save(stockActual);
-}}
+    }
+}

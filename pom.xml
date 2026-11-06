@@ -93,6 +93,29 @@
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
+		<!-- Código QR (Google ZXing) -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+
+		<!-- Generador de PDF libre compatible con Spring Boot 3 / Java 21 -->
+		<dependency>
+			<groupId>com.github.librepdf</groupId>
+			<artifactId>openpdf</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+		<!-- Envío de correos electrónicos (JavaMailSender / Jakarta Mail) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -162,12 +185,13 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!-- Habilitar soporte obligatorio para SOAP 1.2 / WCF DIAN -->
+					<!-- Soporte para SOAP 1.2 / WCF DIAN -->
 					<extension>true</extension>
-					<!-- Descarga y vinculación directa desde la URL de la DIAN -->
-					<wsdlUrls>
-						<wsdlUrl>https://vpfe-hab.dian.gov.co/WcfDianCustomerServices.svc?singleWsdl</wsdlUrl>
-					</wsdlUrls>
+					<!-- Lectura desde el archivo WSDL local en src/main/resources/wsdl/dian.wsdl -->
+					<wsdlDirectory>${project.basedir}/src/main/resources/wsdl</wsdlDirectory>
+					<wsdlFiles>
+						<wsdlFile>dian.wsdl</wsdlFile>
+					</wsdlFiles>
 					<packageName>com.app.pro.dian.wsdl</packageName>
 					<sourceDestDir>${project.build.directory}/generated-sources/jaxws</sourceDestDir>
 				</configuration>

@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Service
 public class AuthService {
-    
     @Autowired
     private UsuarioRepository usuarioRepository;
     
@@ -20,7 +19,7 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     
     public String registrarUsuario(RegisterRequestDTO dto){
-        
+
         if (usuarioRepository.findByCorreo(dto.getCorreo()).isPresent()){
             throw new IllegalArgumentException("El correo ya está registrado en la plataforma.");
         }
@@ -48,4 +47,5 @@ public class AuthService {
         }
         return "Autenticacion exitosa. ¡Bienvenido!";
     }
+
 }
